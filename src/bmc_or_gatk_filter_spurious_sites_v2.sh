@@ -4,6 +4,9 @@
 # mail: yyqin90@gmail.com
 # Created time: 2015-09-03 00:08:03
 # Last modified: 2015-10-27 21:56:45
+
+# Modified by Tian'en He at 2021-02-25 0:54
+
 #!/bin/bash
 echo `date` dir:`pwd` command:$0 $* >>$0.arg
 
@@ -199,6 +202,10 @@ run_2013_NatMethods_filter_regions_in_bed_core_flexible(){
     #UPDATE:
     #1.strandness Alu
 
+    ##### Wed Feb 24 11:48:32 EST 2021
+    #UPDATE
+    #unstranded
+
 	GETOPT_ARGS=`getopt  -o m:n:o:i:t:b:g:v:  -al call_var_method:,outname:,outdir:,inter_name:,bam_file:,genome_build_version:,genome_fasta:,genome_index_blat:,annotation_Alu:,annotation_Repetitive_non_Alu:,annotation_All_repetitive:,annotation_RepeatMasker_simple_repeats:,annotation_intronic_4site:,annotation_gene_transcribed_strands:,stranded: -- "$@"`
 	echo ${GETOPT_ARGS}
         eval set -- "$GETOPT_ARGS"
@@ -327,12 +334,12 @@ COMMENT
     out_final_part_name=${inter_name}"_annotationStrand" 
     input_result="${tmp_work_path}/${outname}${inter_name}${suffix}"
     output_result="${tmp_work_path}/${outname}${out_final_part_name}${suffix}"
-    #if [[  "$stranded" == true   ]];then
+    if [[  "$stranded" == "unstranded"   ]];then
+        cp ${input_result} ${output_result}
+    else
     	echo "distinguish_plus_minus_main_annotation_version $method $input_result $output_result"
     	distinguish_plus_minus_main_annotation_version $method $input_result $output_result ${annotation_gene_transcribed_strands}
-    #else
-    #	cp ${input_result} ${output_result}
-    #fi
+    fi
 
     Alu_final_result="${output_result}"
 
@@ -413,12 +420,12 @@ COMMENT
     out_final_part_name=${inter_name}"_annotationStrand" 
     input_result="${tmp_work_path}/${outname}${inter_name}${suffix}"
     output_result="${tmp_work_path}/${outname}${out_final_part_name}${suffix}"
-    #if [[  "$stranded" == true   ]];then
+    if [[  "$stranded" == "unstranded"   ]];then
+         cp ${input_result} ${output_result}
+    else
     	echo "distinguish_plus_minus_main_annotation_version $method $input_result $output_result"
     	distinguish_plus_minus_main_annotation_version $method $input_result $output_result ${annotation_gene_transcribed_strands}
-    #else
-    #    cp ${input_result} ${output_result}
-    #fi    
+    fi    
     ################################split_non-alu_to_nonAlu_nonRepeat#################################
 
     #_HaplotypeCaller_Variants_2pass_SNP_deAllSNP_dbSNP_b151_1000genomes_EVS_hits10_non-Alu_deSimpleRepeat_intronic4bp_deHomopolymer_blat_annotationStrand.

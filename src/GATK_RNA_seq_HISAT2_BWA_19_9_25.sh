@@ -37,6 +37,10 @@ RNA_Editing_Calling_Pipeline_HISAT2_BWA_followed_by_GATK_HaplotypeCaller(){
     ###update:
     ###### Sat Nov 9 14:34:48 CST 2019
     #add parameter "$genome_build_version"
+
+    ###### Wed Feb 24 11:42:52 EST 2021 
+    ##### Tianen He
+    #add the option for unstranded reads
     ####################init END#################################################
 	fq0=""
 	fq1=""
@@ -183,8 +187,12 @@ HISAT2_2mismatch_following_BWA_6mismatch_mapping(){
         ### 1. HISAT2 2 mismatches mapping
         ##################need confirm: --rna-strandness RF update:###### Wed Sep 25 19:56:57 CST 2019 confirmed, 0.12 VS 0.88
         #hisat2  --rna-strandness RF --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${dep_path}/${genome_build_version}/${genome_build_version}_annotation/ref_all_spsites.txt --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p 10 -x /picb/rnomics1/database/Human/${genome_build_version}/genome/${genome_build_version}_all -1  ${fq_path}/${outname}${fq_suffix_1}  -2 ${fq_path}/${outname}${fq_suffix_2}  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  2>${HISAT_map}/log_HISAT2_2mismatch_${outname}_`date +%Y_%m_%d`.log 
-        hisat2  --rna-strandness ${stranded} --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x   ${genome_index_hisat2} -1  $fq1  -2 $fq2  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  
-	#2>${HISAT_map}/log_HISAT2_2mismatch_${outname}_`date +%Y_%m_%d`.log ###### Wed Nov 20 08:06:39 CST 2019 fzc
+        if [ "$stranded" == "unstranded" ]; then
+                hisat2  --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x   ${genome_index_hisat2} -1  $fq1  -2 $fq2  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  
+        else
+                hisat2  --rna-strandness ${stranded} --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x   ${genome_index_hisat2} -1  $fq1  -2 $fq2  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  
+        fi
+        #2>${HISAT_map}/log_HISAT2_2mismatch_${outname}_`date +%Y_%m_%d`.log ###### Wed Nov 20 08:06:39 CST 2019 fzc
         
         samtools view --threads ${thread} -h -F 4 ${HISAT_map}/${outname}_HISAT2_mapped.sam|awk 'BEGIN{FS="XM:i:"}{if($0 ~/^@/){print $0}else{if ($0 ~ "XM"){split($2,a,"\t");if ( a[1] <= 2 ) print $0 } else print $0 " not have XM tag"}}'|awk 'BEGIN{FS="NH:i:"}{if($0 ~/^@/){print $0}else{if ($0 ~ "NH"){split($2,a,"\t");if ( a[1] == 1 ) print $0 } else print $0 " not have NH tag"  }}' >${HISAT_map}/${outname}_unique_mismatch2.sam &
 
@@ -219,9 +227,12 @@ HISAT2_2mismatch_following_BWA_6mismatch_mapping(){
 
 	## two round mapping
         #hisat2 --secondary --no-temp-splicesite --known-splicesite-infile ${dep_path}/${genome_build_version}/${genome_build_version}_annotation/ref_all_spsites.txt --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p 10 -x /picb/rnomics1/database/Human/${genome_build_version}/genome/${genome_build_version}_all -U ${fq_path}/${outname}.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 2>${log_path}/${genome_build_version}/bmc/HISAT2/log_hisat2_${outname}.log 
-
-        hisat2 --rna-strandness ${stranded} --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x ${genome_index_hisat2} -U $fq0 -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 
-	#2>${HISAT_map}/log_HISAT2_2mismatch_${outname}_`date +%Y_%m_%d`.log 
+        if [ "$stranded" == "unstranded" ]; then
+                hisat2  --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x   ${genome_index_hisat2} -1  $fq1  -2 $fq2  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  
+        else
+                hisat2 --rna-strandness ${stranded} --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x ${genome_index_hisat2} -U $fq0 -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 
+	fi
+        #2>${HISAT_map}/log_HISAT2_2mismatch_${outname}_`date +%Y_%m_%d`.log 
 
         samtools view --threads ${thread} -h -F 4 ${HISAT_map}/${outname}_HISAT2_mapped.sam|awk 'BEGIN{FS="XM:i:"}{if($0 ~/^@/){print $0}else{if ($0 ~ "XM"){split($2,a,"\t");if ( a[1] <= 2 ) print $0 } else print $0 " not have XM tag" }}'|awk 'BEGIN{FS="NH:i:"}{if($0 ~/^@/){print $0}else{if ($0 ~ "NH"){split($2,a,"\t");if ( a[1] == 1 ) print $0 } else print $0 " not have NH tag" }}' >${HISAT_map}/${outname}_unique_mismatch2.sam &
         samtools view --threads ${thread} -bS -f 4 -o ${HISAT_map}/${outname}_HISAT2_unmapped.bam ${HISAT_map}/${outname}_HISAT2_mapped.sam
