@@ -772,12 +772,12 @@ prepare_for_blat_2013_Natmethods_version(){
     for chr in ${chr_list[@]}
     do
     {
-        if [ "$n" -eq "5" ];then
-        n=0
-        wait
-        fi
-        let n+=1
-        samtools mpileup -Q 20 -O -f $ref_genome_path --output-QNAME -r $chr -l ${tmp_path}/${input_basename}/split_chr/$chr $bam_file > ${tmp_path}/${input_basename}/mpilup_output/${chr}_mpileup_output &
+        # if [ "$n" -eq "5" ];then
+        # n=0
+        # wait
+        # fi
+        # let n+=1
+        samtools mpileup -Q 20 -O -f $ref_genome_path --output-QNAME -r $chr -l ${tmp_path}/${input_basename}/split_chr/$chr $bam_file > ${tmp_path}/${input_basename}/mpilup_output/${chr}_mpileup_output
     }
     done
 
