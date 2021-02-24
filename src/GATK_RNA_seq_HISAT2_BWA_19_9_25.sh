@@ -228,7 +228,7 @@ HISAT2_2mismatch_following_BWA_6mismatch_mapping(){
 	## two round mapping
         #hisat2 --secondary --no-temp-splicesite --known-splicesite-infile ${dep_path}/${genome_build_version}/${genome_build_version}_annotation/ref_all_spsites.txt --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p 10 -x /picb/rnomics1/database/Human/${genome_build_version}/genome/${genome_build_version}_all -U ${fq_path}/${outname}.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 2>${log_path}/${genome_build_version}/bmc/HISAT2/log_hisat2_${outname}.log 
         if [ "$stranded" == "unstranded" ]; then
-                hisat2  --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x   ${genome_index_hisat2} -1  $fq1  -2 $fq2  --un-conc-gz ${HISAT_map}/${outname}_un_conc_%.fastq.gz -S ${HISAT_map}/${outname}_HISAT2_mapped.sam  
+                hisat2 --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x ${genome_index_hisat2} -U $fq0 -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 
         else
                 hisat2 --rna-strandness ${stranded} --no-mixed --secondary --no-temp-splicesite --known-splicesite-infile ${annotation_splice_sites} --no-softclip --score-min L,-16,0 --mp 7,7 --rfg 0,7 --rdg 0,7 --max-seeds 20 -k 10 --dta -t -p ${thread} -x ${genome_index_hisat2} -U $fq0 -S ${HISAT_map}/${outname}_HISAT2_mapped.sam 
 	fi
