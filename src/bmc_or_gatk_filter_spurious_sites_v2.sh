@@ -110,13 +110,13 @@ COMMENT
     output_file=${tmp_work_path}/${outname}${inter_name}_deAllSNP_dbSNP_b151${suffix}
     test -e $input_file ||{
         echo "$input_file do not exists,skip it!"
-#        continue
+        #continue
     }
     test -e ${tmp_work_path}/${outname}${inter_name}_deAllSNP_dbSNP_b151_1000genomes_EVS${suffix} && tmp_a=`head ${tmp_work_path}/${outname}${inter_name}_deAllSNP_dbSNP_b151_1000genomes_EVS${suffix}`
 
     test "$tmp_a" != ""  && {
         echo "${tmp_work_path}/${outname}${inter_name}_deAllSNP_dbSNP_b151_1000genomes_EVS${suffix} exists,skip it!"
-#        continue
+        #continue
     }
 
 
@@ -421,7 +421,7 @@ COMMENT
     input_result="${tmp_work_path}/${outname}${inter_name}${suffix}"
     output_result="${tmp_work_path}/${outname}${out_final_part_name}${suffix}"
     if [[  "$stranded" == "unstranded"   ]];then
-         cp ${input_result} ${output_result}
+        cp ${input_result} ${output_result}
     else
     	echo "distinguish_plus_minus_main_annotation_version $method $input_result $output_result"
     	distinguish_plus_minus_main_annotation_version $method $input_result $output_result ${annotation_gene_transcribed_strands}
